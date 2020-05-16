@@ -2,7 +2,7 @@
   "name": "Moje ING - masked password filler",
   "version": "1.0",
   "description": "Extension speed up process of filling up masked passwords on Moje ING portal. It works the best with password managers eg. LastPass.",
-  "permissions": ["activeTab"],
+  "permissions": [],
   "content_scripts": [
     {
       "matches": ["https://login.ingbank.pl/mojeing/app/*"],
