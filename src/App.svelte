@@ -58,6 +58,7 @@
       });
 
       goToNextLoginStep();
+      isHidden = true;
     }
   };
 </script>
