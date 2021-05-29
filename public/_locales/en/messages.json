@@ -1,0 +1,18 @@
+{
+  "app_title": {
+    "message": "Moje ING - masked password filler",
+    "description": "Name of the extension"
+  },
+  "app_description": {
+    "message": "The add-on allows you to enter your full login and password, and then fill in the masked login fields on the Moje ING website. Works best with password managers like KeePass or LastPass.",
+    "description": "Description of the extension"
+  },
+  "fill_login": {
+    "message": "Fill login",
+    "description": "The button that fills in the login field"
+  },
+  "fill_password": {
+    "message": "Fill password",
+    "description": "The button that fills in the password field"
+  }
+}

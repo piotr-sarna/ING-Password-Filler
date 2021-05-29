@@ -1,8 +1,14 @@
-<script lang="ts">
+<script lang="ts" context="module">
+  declare const chrome: any;
+
   let containerElement: HTMLDivElement;
   let loginElement: HTMLInputElement;
   let passwordElement: HTMLInputElement;
   let isHidden = false;
+
+  const t = (translationKey: string): string => {
+    return chrome.i18n.getMessage(translationKey) ?? translationKey;
+  };
 
   const getWebsiteLoginInputElement = () =>
     document.getElementById("login-input") as HTMLInputElement;
@@ -69,21 +75,21 @@
   class:mpf-hidden={isHidden}
 >
   <div class="mpf-wrapper">
-    <div class="mpf-title">Moje ING - masked password filler</div>
+    <div class="mpf-title">{t("app_title")}</div>
     <input
       bind:this={loginElement}
       id="mpf-login-input"
       class="form-control mpf-input"
       type="text"
     />
-    <button class="mpf-button" on:click={onLoginFill}>Fill login</button>
+    <button class="mpf-button" on:click={onLoginFill}>{t("fill_login")}</button>
     <input
       bind:this={passwordElement}
       id="mpf-password-input"
       class="form-control mpf-input"
       type="password"
     />
-    <button class="mpf-button" on:click={onPasswordFill}>Fill password</button>
+    <button class="mpf-button" on:click={onPasswordFill}>{t("fill_password")}</button>
   </div>
   <button class="mpf-toggle" on:click={() => (isHidden = !isHidden)}>
     <i class="mpf-arrow mpf-upleft" />

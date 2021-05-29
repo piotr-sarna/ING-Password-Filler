@@ -1,0 +1,18 @@
+{
+  "app_title": {
+    "message": "Moje ING - wypełniacz maskowanego hasła",
+    "description": "Nazwa dodatku"
+  },
+  "app_description": {
+    "message": "Dodatek pozwala wpisać pełny login i hasło, a następnie uzupełnić nimi maskowane pola do logowania na stronie Moje ING. Najlepiej działa z managerami haseł takimi jak KeePass lub LastPass.",
+    "description": "Opis dodatku"
+  },
+  "fill_login": {
+    "message": "Wypełnij login",
+    "description": "Przycisk, który wypełnia pole login"
+  },
+  "fill_password": {
+    "message": "Wypełnij hasło",
+    "description": "Przycisk, który wypełnia pole hasła"
+  }
+}
