@@ -1,33 +1,178 @@
 <script lang="ts">
-  export let name: string;
+  let containerElement: HTMLDivElement;
+  let loginElement: HTMLInputElement;
+  let passwordElement: HTMLInputElement;
+  let isHidden = false;
+
+  const getWebsiteLoginInputElement = () =>
+    document.getElementById("login-input") as HTMLInputElement;
+  const goToNextLoginStep = () => {
+    const ingButtons = document.getElementsByTagName("ing-button");
+    const nextStepButton = ingButtons[0] as HTMLButtonElement;
+
+    nextStepButton?.click();
+  };
+
+  const fillInput = (input: HTMLInputElement, newValue: string) => {
+    const dispatchEvent = (eventName: string) =>
+      input.dispatchEvent(
+        new Event(eventName, { bubbles: true, cancelable: true })
+      );
+
+    input.value = newValue;
+
+    dispatchEvent("input");
+    dispatchEvent("keyup");
+    dispatchEvent("change");
+  };
+
+  const onLoginFill = () => {
+    const loginInput = getWebsiteLoginInputElement();
+    const login = loginElement.value;
+
+    if (loginInput) {
+      fillInput(loginInput, login);
+      goToNextLoginStep();
+    }
+  };
+
+  const onPasswordFill = () => {
+    const allPasswordInputBoxes = [
+      ...document.getElementsByTagName("input"),
+    ].filter((element) => element.type === "password");
+
+    const passwordInputMap = passwordElement.value
+      .split("")
+      .reduce((map, character, index) => {
+        map.set(`mask-${index + 1}`, character);
+        return map;
+      }, new Map<string, string>());
+
+    if (allPasswordInputBoxes.length > 0) {
+      allPasswordInputBoxes.forEach((inputBox) => {
+        const character = passwordInputMap.get(inputBox.id);
+
+        if (character) {
+          fillInput(inputBox, character);
+        }
+      });
+
+      goToNextLoginStep();
+    }
+  };
 </script>
 
-<main>
-  <h1>Hello {name}!</h1>
-  <p>
-    Visit the <a href="https://svelte.dev/tutorial">Svelte tutorial</a> to learn
-    how to build Svelte apps.
-  </p>
-</main>
+<div
+  bind:this={containerElement}
+  class="mpf-background"
+  class:mpf-hidden={isHidden}
+>
+  <div class="mpf-wrapper">
+    <div class="mpf-title">Moje ING - masked password filler</div>
+    <input
+      bind:this={loginElement}
+      id="mpf-login-input"
+      class="form-control mpf-input"
+      type="text"
+    />
+    <button class="mpf-button" on:click={onLoginFill}>Fill login</button>
+    <input
+      bind:this={passwordElement}
+      id="mpf-password-input"
+      class="form-control mpf-input"
+      type="password"
+    />
+    <button class="mpf-button" on:click={onPasswordFill}>Fill password</button>
+  </div>
+  <button class="mpf-toggle" on:click={() => (isHidden = !isHidden)}>
+    <i class="mpf-arrow mpf-upleft" />
+  </button>
+</div>
 
 <style lang="scss">
-  main {
-    text-align: center;
-    padding: 1em;
-    max-width: 240px;
-    margin: 0 auto;
+  .mpf-background {
+    --ing-color: #ff6200;
+    --visible-circle-size: 40rem;
+    --toggle-size: 3rem;
+    --root-2: 1.4142;
+    position: absolute;
+    top: calc(-1 * var(--visible-circle-size));
+    left: calc(-1 * var(--visible-circle-size));
+    padding-top: var(--visible-circle-size);
+    padding-left: var(--visible-circle-size);
+    height: calc(2 * var(--visible-circle-size));
+    width: calc(2 * var(--visible-circle-size));
+    background-color: var(--ing-color);
+    border-radius: 50%;
+    z-index: 99999;
+    transition: transform 0.3s ease-out;
   }
 
-  h1 {
-    color: #ff3e00;
-    text-transform: uppercase;
-    font-size: 4em;
-    font-weight: 100;
+  .mpf-hidden {
+    transform: translate(
+      calc(var(--toggle-size) - var(--visible-circle-size) / var(--root-2)),
+      calc(var(--toggle-size) - var(--visible-circle-size) / var(--root-2))
+    );
   }
 
-  @media (min-width: 640px) {
-    main {
-      max-width: none;
+  .mpf-hidden .mpf-upleft {
+    transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
+  }
+
+  .mpf-wrapper {
+    height: calc(var(--visible-circle-size) / var(--root-2));
+    width: calc(var(--visible-circle-size) / var(--root-2));
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+  }
+
+  .mpf-title {
+    color: #fff;
+  }
+
+  .mpf-input {
+    margin: 0.8rem 0 !important;
+  }
+
+  .mpf-button {
+    width: 50%;
+    height: 2.8rem;
+    background-color: #fff;
+    color: #333;
+    border: 1px solid var(--ing-color);
+
+    &:hover {
+      background-color: var(--ing-color);
+      color: #fff;
+      border: 1px solid #fff;
     }
+  }
+
+  .mpf-arrow {
+    border: solid #fff;
+    border-width: 0 3px 3px 0;
+    display: inline-block;
+    padding: 3px;
+  }
+
+  .mpf-upleft {
+    transform: rotate(180deg);
+    -webkit-transform: rotate(180deg);
+  }
+
+  .mpf-toggle {
+    width: var(--toggle-size);
+    height: var(--toggle-size);
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    outline: none;
+    position: relative;
+    top: calc(-1 * var(--toggle-size));
+    left: calc(var(--visible-circle-size) / 1.4142 - var(--toggle-size));
   }
 </style>
