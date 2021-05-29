@@ -1,6 +1,6 @@
 {
   "name": "ing-password-filler",
-  "version": "2.0.0",
+  "version": "1.0.0",
   "private": true,
   "repository": {
     "type": "git",
@@ -13,7 +13,9 @@
     "validate": "svelte-check",
     "dist": "npm run build && npm run pre-create-dist && npm run create-dist",
     "pre-create-dist": "rm -f \"dist/password-filler-$npm_package_version.zip\" && rm -f public/**/*.map",
-    "create-dist": "cd public && zip -r \"../dist/password-filler-$npm_package_version.zip\" *"
+    "create-dist": "cd public && zip -r \"../dist/password-filler-$npm_package_version.zip\" *",
+    "sync-manifest-version": "jq --arg version $npm_package_version '.version=$version' public/manifest.json > public/manifest.json.new && mv public/manifest.json.new public/manifest.json",
+    "version": "npm run sync-manifest-version && git add public/manifest.json"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^17.0.0",
@@ -21,6 +23,7 @@
     "@rollup/plugin-typescript": "^8.0.0",
     "@tsconfig/svelte": "^1.0.0",
     "@types/chrome": "0.0.143",
+    "node-jq": "^1.12.0",
     "rollup": "^2.3.4",
     "rollup-plugin-css-only": "^3.1.0",
     "rollup-plugin-livereload": "^2.0.0",
