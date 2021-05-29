@@ -1,12 +1,19 @@
 {
-  "name": "svelte-app",
-  "version": "1.0.0",
+  "name": "ing-password-filler",
+  "version": "2.0.0",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/piotr-sarna/ING-Password-Filler"
+  },
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -c -w",
     "start": "sirv public --no-clear",
-    "validate": "svelte-check"
+    "validate": "svelte-check",
+    "dist": "npm run build && npm run pre-create-dist && npm run create-dist",
+    "pre-create-dist": "rm -f \"dist/password-filler-$npm_package_version.zip\" && rm -f public/**/*.map",
+    "create-dist": "cd public && zip -r \"../dist/password-filler-$npm_package_version.zip\" *"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^17.0.0",
