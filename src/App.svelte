@@ -1,6 +1,4 @@
-<script lang="ts" context="module">
-  declare const chrome: any;
-
+<script lang="ts">
   let containerElement: HTMLDivElement;
   let loginElement: HTMLInputElement;
   let passwordElement: HTMLInputElement;
@@ -89,7 +87,9 @@
       class="form-control mpf-input"
       type="password"
     />
-    <button class="mpf-button" on:click={onPasswordFill}>{t("fill_password")}</button>
+    <button class="mpf-button" on:click={onPasswordFill}
+      >{t("fill_password")}</button
+    >
   </div>
   <button class="mpf-toggle" on:click={() => (isHidden = !isHidden)}>
     <i class="mpf-arrow mpf-upleft" />
@@ -139,6 +139,8 @@
 
   .mpf-title {
     color: #fff;
+    white-space: nowrap;
+    align-self: flex-start;
   }
 
   .mpf-input {
