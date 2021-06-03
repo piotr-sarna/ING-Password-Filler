@@ -8,8 +8,6 @@
     return chrome.i18n.getMessage(translationKey) ?? translationKey;
   };
 
-  const getWebsiteLoginInputElement = () =>
-    document.getElementById("login-input") as HTMLInputElement;
   const goToNextLoginStep = () => {
     const ingButtons = document.getElementsByTagName("ing-button");
     const nextStepButton = ingButtons[0] as HTMLButtonElement;
@@ -31,39 +29,67 @@
   };
 
   const onLoginFill = () => {
-    const loginInput = getWebsiteLoginInputElement();
+    const loginInput = document.getElementById(
+      "login-input"
+    ) as HTMLInputElement;
     const login = loginElement.value;
 
-    if (loginInput) {
+    if (loginInput && login?.length > 0) {
       fillInput(loginInput, login);
       goToNextLoginStep();
     }
   };
 
   const onPasswordFill = () => {
-    const allPasswordInputBoxes = [
-      ...document.getElementsByTagName("input"),
-    ].filter((element) => element.type === "password");
+    const maskedBoxIdPrefix = "mask-";
+    const maskedInputBoxes = [...document.getElementsByTagName("input")].filter(
+      (input) =>
+        input.id.startsWith(maskedBoxIdPrefix) && input.type === "password"
+    );
 
-    const passwordInputMap = passwordElement.value
+    const passwordCharaters = passwordElement.value
       .split("")
       .reduce((map, character, index) => {
-        map.set(`mask-${index + 1}`, character);
+        map.set(`${maskedBoxIdPrefix}${index + 1}`, character);
         return map;
       }, new Map<string, string>());
 
-    if (allPasswordInputBoxes.length > 0) {
-      allPasswordInputBoxes.forEach((inputBox) => {
-        const character = passwordInputMap.get(inputBox.id);
+    maskedInputBoxes.forEach((maskedInputBox) => {
+      const passwordCharacter = passwordCharaters.get(maskedInputBox.id);
 
-        if (character) {
-          fillInput(inputBox, character);
-        }
-      });
+      if (passwordCharacter) {
+        fillInput(maskedInputBox, passwordCharacter);
+      }
+    });
 
+    if (
+      maskedInputBoxes.length > 0 &&
+      maskedInputBoxes.every((maskedInputBox) => maskedInputBox.value !== "")
+    ) {
       goToNextLoginStep();
-      isHidden = true;
+      onPasswordFilled();
     }
+  };
+
+  const onPasswordFilled = () => {
+    isHidden = true;
+
+    const checkIfSuccessfullLoginInterval = 500;
+    const checkIfSuccessfullLoginTimeout = 10 * checkIfSuccessfullLoginInterval;
+
+    const interval = setInterval(() => {
+      const contentElement = document.getElementById("content-region");
+
+      if (contentElement.classList.contains("main-content-region")) {
+        fillInput(loginElement, "");
+        fillInput(passwordElement, "");
+        clearInterval(interval);
+      }
+    }, checkIfSuccessfullLoginInterval);
+
+    setTimeout(() => {
+      clearInterval(interval);
+    }, checkIfSuccessfullLoginTimeout);
   };
 </script>
 
@@ -102,7 +128,7 @@
     --visible-circle-size: 40rem;
     --toggle-size: 3rem;
     --root-2: 1.4142;
-    position: absolute;
+    position: fixed;
     top: calc(-1 * var(--visible-circle-size));
     left: calc(-1 * var(--visible-circle-size));
     padding-top: var(--visible-circle-size);
