@@ -9,17 +9,14 @@
   };
 
   const goToNextLoginStep = () => {
-    const ingButtons = document.getElementsByTagName("ing-button");
-    const nextStepButton = ingButtons[0] as HTMLButtonElement;
+    const nextStepButton = getButtonByTagName("ing-button") as HTMLButtonElement;
 
     nextStepButton?.click();
   };
 
   const fillInput = (input: HTMLInputElement, newValue: string) => {
     const dispatchEvent = (eventName: string) =>
-      input.dispatchEvent(
-        new Event(eventName, { bubbles: true, cancelable: true })
-      );
+      input.dispatchEvent(new Event(eventName, { bubbles: true, cancelable: true }));
 
     input.value = newValue;
 
@@ -29,9 +26,7 @@
   };
 
   const onLoginFill = () => {
-    const loginInput = document.getElementById(
-      "login-input"
-    ) as HTMLInputElement;
+    const loginInput = getInputByNameAttribute("login") as HTMLInputElement;
     const login = loginElement.value;
 
     if (loginInput && login?.length > 0) {
@@ -41,31 +36,25 @@
   };
 
   const onPasswordFill = () => {
-    const maskedBoxIdPrefix = "mask-";
-    const maskedInputBoxes = [...document.getElementsByTagName("input")].filter(
-      (input) =>
-        input.id.startsWith(maskedBoxIdPrefix) && input.type === "password"
-    );
+    const maskedBoxIdPrefix = "pin-";
+    const passwordCharaters = passwordElement.value.split("");
+    let success = false;
+    let i = 1;
 
-    const passwordCharaters = passwordElement.value
-      .split("")
-      .reduce((map, character, index) => {
-        map.set(`${maskedBoxIdPrefix}${index + 1}`, character);
-        return map;
-      }, new Map<string, string>());
+    while (true) {
+      const maskedBox = getInputByNameAttribute(`${maskedBoxIdPrefix}${i}`) as HTMLInputElement;
 
-    maskedInputBoxes.forEach((maskedInputBox) => {
-      const passwordCharacter = passwordCharaters.get(maskedInputBox.id);
+      if (!maskedBox || i > passwordCharaters.length) break;
 
-      if (passwordCharacter) {
-        fillInput(maskedInputBox, passwordCharacter);
+      if (!maskedBox.disabled) {
+        fillInput(maskedBox, passwordCharaters[i - 1]);
+        success = true;
       }
-    });
 
-    if (
-      maskedInputBoxes.length > 0 &&
-      maskedInputBoxes.every((maskedInputBox) => maskedInputBox.value !== "")
-    ) {
+      ++i;
+    }
+
+    if (success) {
       goToNextLoginStep();
       onPasswordFilled();
     }
@@ -75,12 +64,12 @@
     isHidden = true;
 
     const checkIfSuccessfullLoginInterval = 500;
-    const checkIfSuccessfullLoginTimeout = 10 * checkIfSuccessfullLoginInterval;
+    const checkIfSuccessfullLoginTimeout = 30 * checkIfSuccessfullLoginInterval;
 
     const interval = setInterval(() => {
       const contentElement = document.getElementById("content-region");
 
-      if (contentElement.classList.contains("main-content-region")) {
+      if (contentElement?.classList.contains("main-content-region")) {
         fillInput(loginElement, "");
         fillInput(passwordElement, "");
         clearInterval(interval);
@@ -91,31 +80,55 @@
       clearInterval(interval);
     }, checkIfSuccessfullLoginTimeout);
   };
+
+  const getInputByNameAttribute = (name: string): Element | null => {
+    const test = (e: Element) => {
+      const tagName = e.localName;
+      const nameAttribute = e.attributes.getNamedItem("name")?.value;
+
+      return tagName === "input" && nameAttribute == name;
+    };
+
+    return findElementRecursive(test, document.body);
+  };
+
+  const getButtonByTagName = (name: string): Element | null => {
+    const test = (e: Element) => {
+      const tagName = e.localName;
+      const roleAttribute = e.attributes.getNamedItem("role")?.value;
+
+      return tagName === name && roleAttribute == "button";
+    };
+
+    return findElementRecursive(test, document.body);
+  };
+
+  const findElementRecursive = (test: (e: Element) => boolean, element: Element): Element | null => {
+    if (test(element)) return element;
+
+    for (const child of element.children) {
+      const foundChild = findElementRecursive(test, child);
+
+      if (foundChild) return foundChild;
+    }
+
+    for (const child of element.shadowRoot?.children ?? []) {
+      const foundChild = findElementRecursive(test, child);
+
+      if (foundChild) return foundChild;
+    }
+
+    return null;
+  };
 </script>
 
-<div
-  bind:this={containerElement}
-  class="mpf-background"
-  class:mpf-hidden={isHidden}
->
+<div bind:this={containerElement} class="mpf-background" class:mpf-hidden={isHidden}>
   <div class="mpf-wrapper">
     <div class="mpf-title">{t("app_title")}</div>
-    <input
-      bind:this={loginElement}
-      id="mpf-login-input"
-      class="form-control mpf-input"
-      type="text"
-    />
+    <input bind:this={loginElement} id="mpf-login-input" class="form-control mpf-input" type="text" />
     <button class="mpf-button" on:click={onLoginFill}>{t("fill_login")}</button>
-    <input
-      bind:this={passwordElement}
-      id="mpf-password-input"
-      class="form-control mpf-input"
-      type="password"
-    />
-    <button class="mpf-button" on:click={onPasswordFill}
-      >{t("fill_password")}</button
-    >
+    <input bind:this={passwordElement} id="mpf-password-input" class="form-control mpf-input" type="password" />
+    <button class="mpf-button" on:click={onPasswordFill}>{t("fill_password")}</button>
   </div>
   <button class="mpf-toggle" on:click={() => (isHidden = !isHidden)}>
     <i class="mpf-arrow mpf-upleft" />
