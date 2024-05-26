@@ -7,6 +7,14 @@
     "message": "The add-on allows you to swiftly fill up your login and masked password on the Moje ING website",
     "description": "Description of the extension"
   },
+  "fill_header_title": {
+    "message": "Moje ING",
+    "description": "Short title"
+  },
+  "fill_header_description": {
+    "message": "Masked password filler",
+    "description": "Description"
+  },
   "fill_login": {
     "message": "Fill login",
     "description": "The button that fills in the login field"

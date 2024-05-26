@@ -1,8 +1,15 @@
 {
+  "manifest_version": 3,
+  "default_locale": "en",
+  "version": "3.0.1",
   "name": "__MSG_app_title__",
-  "version": "3.0.0",
   "description": "__MSG_app_description__",
   "permissions": [],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "ing-password-filler@sarna.net.pl"
+    }
+  },
   "content_scripts": [
     {
       "matches": ["https://login.ingbank.pl/mojeing/app/*"],
@@ -15,7 +22,5 @@
     "32": "images/icon32.png",
     "48": "images/icon48.png",
     "128": "images/icon128.png"
-  },
-  "manifest_version": 3,
-  "default_locale": "en"
+  }
 }

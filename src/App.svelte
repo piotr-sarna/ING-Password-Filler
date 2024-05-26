@@ -8,8 +8,8 @@
     return chrome.i18n.getMessage(translationKey) ?? translationKey;
   };
 
-  const goToNextLoginStep = () => {
-    const nextStepButton = getButtonByTagName("ing-button") as HTMLButtonElement;
+  const goToNextLoginStep = (form: HTMLFormElement) => {
+    const nextStepButton = getButtonByTagName("ing-button", form) as HTMLButtonElement;
 
     nextStepButton?.click();
   };
@@ -31,14 +31,14 @@
 
     if (loginInput && login?.length > 0) {
       fillInput(loginInput, login);
-      goToNextLoginStep();
+      goToNextLoginStep(loginInput.form);
     }
   };
 
   const onPasswordFill = () => {
     const maskedBoxIdPrefix = "pin-";
     const passwordCharaters = passwordElement.value.split("");
-    let success = false;
+    let form: HTMLFormElement | null = null;
     let i = 1;
 
     while (true) {
@@ -48,14 +48,14 @@
 
       if (!maskedBox.disabled) {
         fillInput(maskedBox, passwordCharaters[i - 1]);
-        success = true;
+        form = maskedBox.form;
       }
 
       ++i;
     }
 
-    if (success) {
-      goToNextLoginStep();
+    if (form) {
+      goToNextLoginStep(form);
       onPasswordFilled();
     }
   };
@@ -92,7 +92,7 @@
     return findElementRecursive(test, document.body);
   };
 
-  const getButtonByTagName = (name: string): Element | null => {
+  const getButtonByTagName = (name: string, parent: Element = document.body): Element | null => {
     const test = (e: Element) => {
       const tagName = e.localName;
       const roleAttribute = e.attributes.getNamedItem("role")?.value;
@@ -100,7 +100,7 @@
       return tagName === name && roleAttribute == "button";
     };
 
-    return findElementRecursive(test, document.body);
+    return findElementRecursive(test, parent);
   };
 
   const findElementRecursive = (test: (e: Element) => boolean, element: Element): Element | null => {
@@ -123,28 +123,36 @@
 </script>
 
 <div bind:this={containerElement} class="mpf-background" class:mpf-hidden={isHidden}>
-  <div class="mpf-wrapper">
-    <div class="mpf-title">{t("app_title")}</div>
-    <input bind:this={loginElement} id="mpf-login-input" class="form-control mpf-input" type="text" />
-    <button class="mpf-button" on:click={onLoginFill}>{t("fill_login")}</button>
-    <input bind:this={passwordElement} id="mpf-password-input" class="form-control mpf-input" type="password" />
-    <button class="mpf-button" on:click={onPasswordFill}>{t("fill_password")}</button>
-  </div>
   <button class="mpf-toggle" on:click={() => (isHidden = !isHidden)}>
-    <i class="mpf-arrow mpf-upleft" />
+    <i class="mpf-arrow mpf-downleft" />
   </button>
+  <div class="mpf-content">
+    <div class="mpf-wrapper">
+      <div class="mpf-title">{t("fill_header_title")}<br />{t("fill_header_description")}</div>
+      <input bind:this={loginElement} id="mpf-login-input" class="form-control mpf-input" type="text" />
+      <button class="mpf-button" on:click={onLoginFill}>{t("fill_login")}</button>
+      <input bind:this={passwordElement} id="mpf-password-input" class="form-control mpf-input" type="password" />
+      <button class="mpf-button" on:click={onPasswordFill}>{t("fill_password")}</button>
+    </div></div
+  >
 </div>
 
 <style lang="scss">
+  .mpf-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    height: var(--visible-circle-size);
+  }
+
   .mpf-background {
     --ing-color: #ff6200;
     --visible-circle-size: 40rem;
     --toggle-size: 3rem;
     --root-2: 1.4142;
     position: fixed;
-    top: calc(-1 * var(--visible-circle-size));
+    bottom: calc(-1 * var(--visible-circle-size));
     left: calc(-1 * var(--visible-circle-size));
-    padding-top: var(--visible-circle-size);
     padding-left: var(--visible-circle-size);
     height: calc(2 * var(--visible-circle-size));
     width: calc(2 * var(--visible-circle-size));
@@ -157,13 +165,13 @@
   .mpf-hidden {
     transform: translate(
       calc(var(--toggle-size) - var(--visible-circle-size) / var(--root-2)),
-      calc(var(--toggle-size) - var(--visible-circle-size) / var(--root-2))
+      calc(var(--visible-circle-size) / var(--root-2) - var(--toggle-size))
     );
   }
 
-  .mpf-hidden .mpf-upleft {
-    transform: rotate(0deg);
-    -webkit-transform: rotate(0deg);
+  .mpf-hidden .mpf-downleft {
+    transform: rotate(270deg);
+    -webkit-transform: rotate(270deg);
   }
 
   .mpf-wrapper {
@@ -173,7 +181,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 1rem;
+    margin: 0 1rem 2.5rem;
   }
 
   .mpf-title {
@@ -207,9 +215,9 @@
     padding: 3px;
   }
 
-  .mpf-upleft {
-    transform: rotate(180deg);
-    -webkit-transform: rotate(180deg);
+  .mpf-downleft {
+    transform: rotate(90deg);
+    -webkit-transform: rotate(90deg);
   }
 
   .mpf-toggle {
@@ -220,7 +228,7 @@
     padding: 0;
     outline: none;
     position: relative;
-    top: calc(-1 * var(--toggle-size));
-    left: calc(var(--visible-circle-size) / 1.4142 - var(--toggle-size));
+    top: calc(var(--visible-circle-size) - (var(--visible-circle-size) / var(--root-2)));
+    left: calc(var(--visible-circle-size) / var(--root-2) - var(--toggle-size));
   }
 </style>

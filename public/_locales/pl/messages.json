@@ -7,6 +7,14 @@
     "message": "Dodatek pozwala szybko uzupełnić login i maskowane hasło na stronie Moje ING",
     "description": "Opis dodatku"
   },
+  "fill_header_title": {
+    "message": "Moje ING",
+    "description": "Krótki tytuł"
+  },
+  "fill_header_description": {
+    "message": "Wypełniacz maskowanego hasła",
+    "description": "Opis"
+  },
   "fill_login": {
     "message": "Wypełnij login",
     "description": "Przycisk, który wypełnia pole login"
