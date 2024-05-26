@@ -1,13 +1,13 @@
 {
   "manifest_version": 3,
   "default_locale": "en",
-  "version": "3.0.1",
+  "version": "3.1.0",
   "name": "__MSG_app_title__",
   "description": "__MSG_app_description__",
   "permissions": [],
   "browser_specific_settings": {
     "gecko": {
-      "id": "ing-password-filler@sarna.net.pl"
+      "id": "{869c1a6f-c1a4-4433-a567-09e3b4b22f4c}"
     }
   },
   "content_scripts": [
